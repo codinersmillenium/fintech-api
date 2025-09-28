@@ -51,7 +51,7 @@ This ensures that breaking changes can be introduced without affecting existing 
 - **Database**: PostgreSQL (Railway or local Docker).  
 - **Integrations**:  
   - **Stripe (Mock Payment Gateway)** → simulates payments.  
-  - **Notification Service (Mock)** → email/SMS notifications.  
+  - **Webhook Service (Mock)** → Stripe Webhook.  
 
 ---
 
