@@ -61,8 +61,8 @@ This ensures that breaking changes can be introduced without affecting existing 
 - **API Docs**: Swagger at `/api/docs`.  
 - **Authentication flow**:  
   1. Login.  
-  2. Generate OTP (if enabled).  
-  3. Verify OTP.  
+  2. Generate OTP (if enabled) (planned).  
+  3. Verify OTP (planned).  
   4. Set JWT in `Authorization: Bearer <token>`.  
 
 ---
