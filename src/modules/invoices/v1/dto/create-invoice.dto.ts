@@ -4,7 +4,7 @@ import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateInvoiceItemDto {
-  @ApiProperty({ description: 'ID of the purchased product (must be a positive integer)', example: 101 })
+  @ApiProperty({ description: 'ID of the purchased product', example: 'sample: 1, 2 for product ID' })
   @IsNumber({ maxDecimalPlaces: 0 })
   @Min(1)
   productId: number;
