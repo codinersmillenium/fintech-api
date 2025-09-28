@@ -12,10 +12,10 @@ export class StripeMockService {
   private readonly stripeCancelURL: string;
   private readonly stripeApiKey: string;
   constructor(private configService: ConfigService) {
-    this.stripeApiKey = this.configService.get<string>('webhook.secret_key') || "";
-    this.webhookSecret = this.configService.get<string>('webhook.sign_key') || "";
-    this.stripeSuccessURL = this.configService.get<string>('webhook.stripe_success_url') || "";
-    this.stripeCancelURL = this.configService.get<string>('webhook.stripe_cancel_url') || "";
+    this.stripeApiKey = process.env.WEBHOOK_SECRET_KEY || "";
+    this.webhookSecret = process.env.WEBHOOK_SIGN_KEY || "";
+    this.stripeSuccessURL = process.env.WEBHOOK_CALLBACK_URL + '?status=success' || "";
+    this.stripeCancelURL = process.env.WEBHOOK_CALLBACK_URL + '?status=failed' || "";
     if (!this.stripeApiKey) {
       throw new InternalServerErrorException('STRIPE_SECRET_KEY is not defined.');
     }
