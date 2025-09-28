@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model RefPaymentMethod {
+  id       Int       @id @default(autoincrement())
+  method   String    @unique
+  payments Payment[]
+}
+
+model ProductSample {
+  id        Int           @id @default(autoincrement())
+  name      String        @unique
+  price     Decimal       @default(0) @db.Decimal
+  createdAt DateTime      @default(now())
+  updatedAt DateTime?     @updatedAt
+  isDeleted Boolean       @default(false)
+  items     InvoiceItem[]
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  email              String    @unique @db.VarChar(255)
+  password           String
+  isBanned           Boolean   @default(false)
+  twoFactorSecret    String?
+  isTwoFactorEnabled Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  customer           Customer?
+}
+
+model Customer {
+  id        String    @id @default(uuid())
+  userId    String    @unique
+  name      String
+  phone     String?
+  isDeleted Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id])
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id         String        @id @default(uuid())
+  customerId String
+  status     InvoiceStatus @default(UNPAID)
+  amount     Decimal       @default(0) @db.Decimal
+  dueDate    DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  customer   Customer      @relation(fields: [customerId], references: [id])
+  items      InvoiceItem[]
+  payment    Payment?
+}
+
+model InvoiceItem {
+  id        Int           @id @default(autoincrement())
+  invoiceId String
+  productId Int
+  quantity  Int           @default(1)
+  unitPrice Decimal       @default(0) @db.Decimal
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product   ProductSample @relation(fields: [productId], references: [id])
+
+  @@unique([invoiceId, productId])
+}
+
+model Payment {
+  id              String           @id @default(uuid())
+  invoiceId       String           @unique
+  totalPaid       Decimal          @default(0) @db.Decimal
+  payAt           DateTime?
+  paymentMethodId Int
+  status          PaymentStatus    @default(PENDING)
+  transactionRef  String?          @unique
+  gatewayResponse String?
+  createdAt       DateTime         @default(now())
+  invoice         Invoice          @relation(fields: [invoiceId], references: [id])
+  paymentMethod   RefPaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  logs            PaymentLog[]
+}
+
+model PaymentLog {
+  id        Int      @id @default(autoincrement())
+  paymentId String
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+  payment   Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  UNPAID
+  PAID
+  CANCELLED // coming soon
+  VOIDED // coming soon
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED // coming soon
+}
