@@ -8,11 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   
   constructor(private readonly configService: ConfigService) {
     super({
-      datasources: {
-        db: {
-          url: configService.get<string>('database.url'),
-        },
-      },
+      datasourceUrl: configService.get<string>('database.url')
     });
   }
 
